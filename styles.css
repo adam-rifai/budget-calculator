@@ -211,3 +211,32 @@ h2,
 h3 {
   color: teal;
 }
+
+/* FAQ styling goes here-------------!-->*/
+.faq-section {
+  margin-top: 20px;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.faq-section summary {
+  cursor: pointer;
+  font-weight: bold;
+  /* color: #333; */
+  color: teal;
+}
+
+.faq-section dl {
+  margin: 10px 0 0 0;
+}
+
+.faq-section dt {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.faq-section dd {
+  margin: 5px 0 0 20px;
+  color: #555;
+}
