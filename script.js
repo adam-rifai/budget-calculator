@@ -19,6 +19,7 @@ const monthFilter = document.getElementById("month-filter"); // Month filter dro
 const summaryMonthFilter = document.getElementById("summary-month-filter"); // Month filter for summary
 const exportBtn = document.getElementById("export-btn"); // Export button
 const showMoreBtn = document.getElementById("show-more-btn"); // Show More button
+const descriptionInput = document.getElementById("description"); // Description text input
 
 // Set default date to today on page load
 const dateInput = document.getElementById("date");
@@ -120,12 +121,12 @@ form.addEventListener("submit", function (event) {
   event.preventDefault(); // Prevent page refresh
 
   // Get input values
-  const description = document.getElementById("description").value;
+  const description = descriptionInput.value.trim();
   const amount = parseFloat(document.getElementById("amount").value);
   const date = document.getElementById("date").value; // Get date value
   const type = document.getElementById("type").value;
 
-  // Validate inputs, ensure amount is non-negative
+  // Validate inputs, ensure amount is non-negative and description is valid
   if (description === "" || isNaN(amount) || amount < 0 || date === "") {
     alert(
       "Please enter a valid description, a non-negative amount, and a date!"
@@ -144,7 +145,7 @@ form.addEventListener("submit", function (event) {
   renderEntries(); // Re-render filtered list
 
   // Clear form inputs (except date)
-  document.getElementById("description").value = "";
+  descriptionInput.value = ""; // Clear text input
   document.getElementById("amount").value = "";
   // Date input stays as today, no clearing
 });
@@ -162,7 +163,6 @@ clearButton.addEventListener("click", function () {
     totalIncomeDisplay.textContent = "Total Income: $0"; // Reset income display
     totalExpensesDisplay.textContent = "Total Expenses: $0"; // Reset expenses display
     balanceDisplay.textContent = "Balance: $0"; // Reset balance display
-    balanceDisplay.classList.remove("positive", "negative"); // Remove balance styling
     incomeBar.style.height = "0px"; // Reset income bar
     expenseBar.style.height = "0px"; // Reset expense bar
     incomeLabel.textContent = "$0.00"; // Reset income label
@@ -170,7 +170,6 @@ clearButton.addEventListener("click", function () {
     allTotalIncomeDisplay.textContent = "Total Income: $0"; // Reset all months income
     allTotalExpensesDisplay.textContent = "Total Expenses: $0"; // Reset all months expenses
     allBalanceDisplay.textContent = "Balance: $0"; // Reset all months balance
-    allBalanceDisplay.classList.remove("positive", "negative"); // Remove all months balance styling
     toggleClearButton(); // Update button visibility after clearing
     populateMonthFilters(); // Reset month filters
     displayedCount = 10; // Reset displayed count
@@ -288,13 +287,8 @@ function updateSummary() {
   )}`;
   balanceDisplay.textContent = `Balance: $${balance.toFixed(2)}`;
 
-  // Style balance based on value
-  balanceDisplay.classList.remove("positive", "negative");
-  if (balance >= 0) {
-    balanceDisplay.classList.add("positive");
-  } else {
-    balanceDisplay.classList.add("negative");
-  }
+  // No longer toggling .positive/.negative classes
+  // Style is now handled by fixed .total-income, .total-expenses, .balance classes in CSS
 
   // Update chart bars and labels (selected month)
   const maxHeight = 100; // Matches .chart height in CSS
@@ -323,20 +317,12 @@ function updateSummary() {
     2
   )}`;
   allBalanceDisplay.textContent = `Balance: $${allBalance.toFixed(2)}`;
-
-  // Style all-months balance
-  allBalanceDisplay.classList.remove("positive", "negative");
-  if (allBalance >= 0) {
-    allBalanceDisplay.classList.add("positive");
-  } else {
-    allBalanceDisplay.classList.add("negative");
-  }
 }
 
 // Function to toggle Clear All button visibility
 function toggleClearButton() {
   if (entries.length > 2) {
-    // Show button when more than 2 entries (original logic)
+    // Show button when more than 2 entries
     clearButton.style.display = "block";
   } else {
     clearButton.style.display = "none";
