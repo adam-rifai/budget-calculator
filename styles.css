@@ -59,7 +59,8 @@ input[type="date"] {
 /* Styling for the Clear All button */
 .clear-all {
   display: none; /* Hidden by default until > 2 entries */
-  margin: 20px 0 0 0; /* Space above, no centering */
+  /* margin: 20px 0 0 0; Space above, no centering */
+  margin-left: auto;
   padding: 10px 20px; /* Inner spacing */
   font-size: 1em; /* Same size as other buttons */
   background-color: #dc3545; /* Red to indicate reset */

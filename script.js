@@ -112,9 +112,11 @@ form.addEventListener("submit", function (event) {
   const date = document.getElementById("date").value; // Get date value
   const type = document.getElementById("type").value;
 
-  // Validate inputs
-  if (description === "" || isNaN(amount) || amount <= 0 || date === "") {
-    alert("Please enter a valid description, amount, and date!");
+  // Validate inputs, ensure amount is non-negative
+  if (description === "" || isNaN(amount) || amount < 0 || date === "") {
+    alert(
+      "Please enter a valid description, a non-negative amount, and a date!"
+    );
     return;
   }
 

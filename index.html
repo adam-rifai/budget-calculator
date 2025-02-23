@@ -22,7 +22,7 @@
           placeholder="Description (e.g., Salary)"
         />
         <!-- Number input for entry amount -->
-        <input type="number" id="amount" placeholder="Amount" />
+        <input type="number" id="amount" placeholder="Amount" min="0" />
         <!-- Date input for entry date -->
         <input type="date" id="date" />
         <!-- Dropdown to select income or expense -->
@@ -49,6 +49,7 @@
       <!-- Unordered list where entries will be dynamically added -->
       <ul id="entry-list"></ul>
       <!-- Button to clear all entries -->
+
       <button class="clear-all">Clear All</button>
     </section>
 
