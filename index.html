@@ -54,7 +54,13 @@
 
     <!-- Section for summary and chart -->
     <section class="summary-section">
-      <h2>Summary (Current Month)</h2>
+      <h2>Summary</h2>
+      <!-- Month selector for summary -->
+      <div class="controls">
+        <select id="summary-month-filter">
+          <!-- Options will be populated dynamically by JS -->
+        </select>
+      </div>
       <!-- Paragraphs to display totals, updated by JS -->
       <p id="total-income">Total Income: $0</p>
       <p id="total-expenses">Total Expenses: $0</p>

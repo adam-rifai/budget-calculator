@@ -12,7 +12,8 @@ const expenseBar = document.querySelector(".expense-bar"); // Expense bar in cha
 const incomeLabel = document.querySelector(".income-label"); // Income chart label
 const expenseLabel = document.querySelector(".expense-label"); // Expense chart label
 const clearButton = document.querySelector(".clear-all"); // Clear All button
-const monthFilter = document.getElementById("month-filter"); // Month filter dropdown
+const monthFilter = document.getElementById("month-filter"); // Month filter dropdown (for export and list)
+const summaryMonthFilter = document.getElementById("summary-month-filter"); // Month filter for summary
 const exportBtn = document.getElementById("export-btn"); // Export button
 
 // Set default date to today on page load
@@ -20,8 +21,8 @@ const dateInput = document.getElementById("date");
 const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
 dateInput.value = today; // Set default value
 
-// Function to populate month filter
-function populateMonthFilter() {
+// Function to populate month filters
+function populateMonthFilters() {
   const months = new Set(
     entries.map((entry) => {
       const date = new Date(entry.date);
@@ -31,43 +32,75 @@ function populateMonthFilter() {
       )}`; // YYYY-MM format
     })
   );
-  monthFilter.innerHTML = '<option value="all">All Months</option>'; // Reset options
-  months.forEach((month) => {
-    const option = document.createElement("option");
-    option.value = month;
-    option.textContent = month;
-    monthFilter.appendChild(option);
+  const monthOptions = [
+    '<option value="current">Current Month</option>',
+    ...Array.from(months).map(
+      (month) => `<option value="${month}">${month}</option>`
+    ),
+  ].join("");
+  monthFilter.innerHTML =
+    '<option value="all">All Months</option>' + monthOptions;
+  summaryMonthFilter.innerHTML = monthOptions; // Same options, no "All Months" for summary
+  summaryMonthFilter.value = today.slice(0, 7); // Default to current month (YYYY-MM)
+}
+
+// Function to render filtered entries in the list
+function renderEntries() {
+  entryList.innerHTML = ""; // Clear current list
+  const selectedMonth = monthFilter.value;
+  let filteredEntries = entries;
+
+  if (selectedMonth !== "all") {
+    filteredEntries = entries.filter((entry) => {
+      const entryDate = new Date(entry.date);
+      if (selectedMonth === "current") {
+        const now = new Date();
+        return (
+          entryDate.getMonth() === now.getMonth() &&
+          entryDate.getFullYear() === now.getFullYear()
+        );
+      }
+      return (
+        `${entryDate.getFullYear()}-${String(entryDate.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}` === selectedMonth
+      );
+    });
+  }
+
+  filteredEntries.forEach((entry) => {
+    const listItem = document.createElement("li");
+    listItem.classList.add(entry.type); // Add income/expense class for styling
+    const textSpan = document.createElement("span");
+    textSpan.textContent = `${entry.date} - ${
+      entry.description
+    }: $${entry.amount.toFixed(2)}`; // Include date in display
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete"; // Delete button text
+    listItem.appendChild(textSpan); // Add text to list item
+    listItem.appendChild(deleteButton); // Add delete button to list item
+    entryList.appendChild(listItem); // Add list item to the list
+
+    // Add delete functionality
+    deleteButton.addEventListener("click", function () {
+      const index = entries.indexOf(entry); // Find entry in array
+      entries.splice(index, 1); // Remove from array
+      listItem.remove(); // Remove from DOM
+      localStorage.setItem("budgetEntries", JSON.stringify(entries)); // Save updated entries
+      updateSummary(); // Update totals and chart
+      toggleClearButton(); // Check if button should hide
+      populateMonthFilters(); // Update month filters
+      renderEntries(); // Re-render filtered list
+    });
   });
 }
 
 // Load saved entries into the UI on page load
-entries.forEach((entry) => {
-  const listItem = document.createElement("li");
-  listItem.classList.add(entry.type); // Add income/expense class for styling
-  const textSpan = document.createElement("span");
-  textSpan.textContent = `${entry.date} - ${
-    entry.description
-  }: $${entry.amount.toFixed(2)}`; // Include date in display
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "Delete"; // Delete button text
-  listItem.appendChild(textSpan); // Add text to list item
-  listItem.appendChild(deleteButton); // Add delete button to list item
-  entryList.appendChild(listItem); // Add list item to the list
-
-  // Add delete functionality
-  deleteButton.addEventListener("click", function () {
-    const index = entries.indexOf(entry); // Find entry in array
-    entries.splice(index, 1); // Remove from array
-    listItem.remove(); // Remove from DOM
-    localStorage.setItem("budgetEntries", JSON.stringify(entries)); // Save updated entries
-    updateSummary(); // Update totals and chart
-    toggleClearButton(); // Check if button should hide
-    populateMonthFilter(); // Update month filter
-  });
-});
-updateSummary(); // Update totals and chart with loaded entries
+populateMonthFilters();
+renderEntries(); // Render initial list
+updateSummary(); // Update totals and chart with loaded entries after filters are set
 toggleClearButton(); // Ensure button visibility matches loaded entries
-populateMonthFilter(); // Populate month filter on load
 
 // Handle form submission to add new entries
 form.addEventListener("submit", function (event) {
@@ -89,32 +122,11 @@ form.addEventListener("submit", function (event) {
   const entry = { description, amount, date, type };
   entries.push(entry); // Add to entries array
 
-  // Create list item for display
-  const listItem = document.createElement("li");
-  listItem.classList.add(type); // Add income/expense class for styling
-  const textSpan = document.createElement("span");
-  textSpan.textContent = `${date} - ${description}: $${amount.toFixed(2)}`; // Include date in display
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "Delete"; // Delete button text
-  listItem.appendChild(textSpan); // Add text to list item
-  listItem.appendChild(deleteButton); // Add delete button to list item
-  entryList.appendChild(listItem); // Add list item to the list
-
-  // Add delete functionality
-  deleteButton.addEventListener("click", function () {
-    const index = entries.indexOf(entry); // Find entry in array
-    entries.splice(index, 1); // Remove from array
-    listItem.remove(); // Remove from DOM
-    localStorage.setItem("budgetEntries", JSON.stringify(entries)); // Save updated entries
-    updateSummary(); // Update totals and chart
-    toggleClearButton(); // Check if button should hide
-    populateMonthFilter(); // Update month filter
-  });
-
   localStorage.setItem("budgetEntries", JSON.stringify(entries)); // Save updated entries
   updateSummary(); // Update totals and chart after adding
   toggleClearButton(); // Check if button should appear
-  populateMonthFilter(); // Update month filter after adding
+  populateMonthFilters(); // Update month filters after adding
+  renderEntries(); // Re-render filtered list
 
   // Clear form inputs (except date)
   document.getElementById("description").value = "";
@@ -133,8 +145,12 @@ clearButton.addEventListener("click", function () {
   balanceDisplay.classList.remove("positive", "negative"); // Remove balance styling
   incomeBar.style.height = "0px"; // Reset income bar
   expenseBar.style.height = "0px"; // Reset expense bar
+  incomeLabel.textContent = "$0.00"; // Reset income label
+  expenseLabel.textContent = "$0.00"; // Reset expense label
   toggleClearButton(); // Update button visibility after clearing
-  populateMonthFilter(); // Reset month filter
+  populateMonthFilters(); // Reset month filters
+  renderEntries(); // Re-render empty list
+  updateSummary(); // Update summary and chart to reflect cleared state
 });
 
 // Handle Export button click
@@ -145,6 +161,13 @@ exportBtn.addEventListener("click", function () {
   if (selectedMonth !== "all") {
     filteredEntries = entries.filter((entry) => {
       const entryDate = new Date(entry.date);
+      if (selectedMonth === "current") {
+        const now = new Date();
+        return (
+          entryDate.getMonth() === now.getMonth() &&
+          entryDate.getFullYear() === now.getFullYear()
+        );
+      }
       return (
         `${entryDate.getFullYear()}-${String(entryDate.getMonth() + 1).padStart(
           2,
@@ -175,27 +198,51 @@ exportBtn.addEventListener("click", function () {
   document.body.removeChild(link);
 });
 
-// Function to update summary and chart (current month only)
+// Handle month filter change for list and export
+monthFilter.addEventListener("change", function () {
+  renderEntries(); // Re-render list based on selected month
+});
+
+// Handle summary month filter change
+summaryMonthFilter.addEventListener("change", function () {
+  updateSummary(); // Update summary and chart based on selected month
+});
+
+// Function to update summary and chart based on selected month
 function updateSummary() {
-  // Get current month and year for filtering
-  const now = new Date();
-  const currentMonth = now.getMonth(); // 0-11
-  const currentYear = now.getFullYear();
+  const selectedMonth = summaryMonthFilter.value;
+  let filteredEntries = entries;
 
-  // Filter entries for the current month
-  const currentMonthEntries = entries.filter((entry) => {
-    const entryDate = new Date(entry.date);
-    return (
-      entryDate.getMonth() === currentMonth &&
-      entryDate.getFullYear() === currentYear
-    );
-  });
+  if (selectedMonth === "current") {
+    // Filter for current month
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0-11
+    const currentYear = now.getFullYear();
+    filteredEntries = entries.filter((entry) => {
+      const entryDate = new Date(entry.date);
+      return (
+        entryDate.getMonth() === currentMonth &&
+        entryDate.getFullYear() === currentYear
+      );
+    });
+  } else {
+    // Filter for selected YYYY-MM
+    filteredEntries = entries.filter((entry) => {
+      const entryDate = new Date(entry.date);
+      return (
+        `${entryDate.getFullYear()}-${String(entryDate.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}` === selectedMonth
+      );
+    });
+  }
 
-  // Calculate totals for the current month
-  const totalIncome = currentMonthEntries
+  // Calculate totals for the filtered entries
+  const totalIncome = filteredEntries
     .filter((entry) => entry.type === "income") // Filter income entries
     .reduce((sum, entry) => sum + entry.amount, 0); // Sum amounts
-  const totalExpenses = currentMonthEntries
+  const totalExpenses = filteredEntries
     .filter((entry) => entry.type === "expense") // Filter expense entries
     .reduce((sum, entry) => sum + entry.amount, 0); // Sum amounts
   const balance = totalIncome - totalExpenses; // Calculate balance

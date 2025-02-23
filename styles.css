@@ -94,7 +94,8 @@ h2 {
   margin-bottom: 15px; /* Space below controls */
 }
 
-#month-filter {
+#month-filter,
+#summary-month-filter {
   flex: 1; /* Takes available space */
 }
 
