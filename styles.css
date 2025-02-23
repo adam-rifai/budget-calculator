@@ -1,0 +1,181 @@
+/* General styling for the entire page */
+body {
+  font-family: Arial, sans-serif; /* Clean, readable font */
+  background-color: #f0f4f8; /* Light blue background */
+  padding: 20px; /* Space around edges */
+  max-width: 800px; /* Limit width for readability */
+  margin: 0 auto; /* Center the content */
+}
+
+h1 {
+  text-align: center; /* Center the main title */
+  color: #333; /* Dark gray color */
+  margin-bottom: 30px; /* Space below title */
+}
+
+/* Styling for the input section */
+.input-section {
+  margin-bottom: 40px; /* Space below this section */
+}
+
+#budget-form {
+  display: flex; /* Align form elements in a row */
+  gap: 10px; /* Space between form elements */
+}
+
+input,
+select,
+button {
+  padding: 10px; /* Inner spacing for inputs and buttons */
+  font-size: 1em; /* Consistent font size */
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 5px; /* Rounded corners */
+}
+
+input[type="text"] {
+  flex: 2; /* Description field takes more space */
+}
+
+input[type="number"] {
+  flex: 1; /* Amount field takes less space */
+}
+
+#budget-form button {
+  background-color: #007bff; /* Blue "Add" button */
+  color: white; /* White text */
+  border: none; /* No border */
+  cursor: pointer; /* Hand cursor on hover */
+}
+
+#budget-form button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Styling for the Clear All button */
+.clear-all {
+  display: none; /* Hidden by default until > 2 entries */
+  /* margin: 20px 0 0 0; Space above, no centering */
+  margin: 0 auto;
+  padding: 10px 20px; /* Inner spacing */
+  font-size: 1em; /* Same size as other buttons */
+  background-color: #dc3545; /* Red to indicate reset */
+  color: white; /* White text */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Hand cursor */
+}
+
+.clear-all:hover {
+  background-color: #b02a37; /* Darker red on hover */
+}
+
+/* Styling for the entries section */
+.entries-section {
+  background: white; /* White background for contrast */
+  padding: 20px; /* Inner spacing */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin-bottom: 20px; /* Space below */
+}
+
+h2 {
+  font-size: 1.5em; /* Slightly larger headings */
+  color: #333; /* Dark gray */
+  margin-bottom: 15px; /* Space below headings */
+}
+
+ul {
+  list-style: none; /* Remove default bullets */
+}
+
+ul li {
+  padding: 10px; /* Inner spacing for list items */
+  margin: 5px 0; /* Space between items */
+  border-radius: 5px; /* Rounded corners */
+  display: flex; /* Align text and delete button in a row */
+  justify-content: space-between; /* Space out content */
+  align-items: center; /* Vertically center content */
+}
+
+ul li.income {
+  background-color: #d4edda; /* Light green for income */
+  color: #155724; /* Dark green text */
+}
+
+ul li.expense {
+  background-color: #f8d7da; /* Light red for expenses */
+  color: #721c24; /* Dark red text */
+}
+
+ul li button {
+  padding: 5px 10px; /* Smaller padding for delete buttons */
+  font-size: 0.9em; /* Slightly smaller text */
+  background-color: #dc3545; /* Red delete button */
+  color: white; /* White text */
+  border: none; /* No border */
+  border-radius: 3px; /* Slightly rounded */
+  cursor: pointer; /* Hand cursor */
+}
+
+ul li button:hover {
+  background-color: #b02a37; /* Darker red on hover */
+}
+
+/* Styling for the summary section */
+.summary-section {
+  background: white; /* White background */
+  padding: 20px; /* Inner spacing */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+p {
+  font-size: 1.1em; /* Slightly larger text */
+  margin: 5px 0; /* Space between paragraphs */
+}
+
+p.positive {
+  color: #155724; /* Green for positive balance */
+}
+
+p.negative {
+  color: #721c24; /* Red for negative balance */
+}
+
+/* Styling for the bar chart */
+.chart {
+  display: flex; /* Bars side by side */
+  justify-content: center; /* Center the bars */
+  gap: 20px; /* Space between bars */
+  height: 100px; /* Reduced chart height */
+  margin-top: 20px; /* Space above */
+  align-items: flex-end; /* Bars grow upward */
+}
+
+.bar-container {
+  position: relative; /* For positioning labels above bars */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center labels and bars */
+}
+
+.bar {
+  width: 50px; /* Bar width */
+  background-color: #ccc; /* Default color (overridden below) */
+  transition: height 0.3s ease; /* Smooth height animation */
+}
+
+.income-bar {
+  background-color: #28a745; /* Green for income */
+}
+
+.expense-bar {
+  background-color: #dc3545; /* Red for expenses */
+}
+
+.chart-label {
+  position: absolute; /* Position above the bar */
+  top: -25px; /* Offset above the bar */
+  font-size: 0.9em; /* Smaller text */
+  color: #333; /* Dark gray text */
+}

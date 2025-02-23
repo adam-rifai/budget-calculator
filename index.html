@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Budget Calculator</title>
+    <!-- Link to external CSS file for styling -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Main title of the app -->
+    <h1>Personal Budget Calculator</h1>
+
+    <!-- Section for user input -->
+    <section class="input-section">
+      <!-- Form to add new budget entries -->
+      <form id="budget-form" autocomplete="off">
+        <!-- Text input for entry description -->
+        <input
+          type="text"
+          id="description"
+          placeholder="Description (e.g., Salary)"
+        />
+        <!-- Number input for entry amount -->
+        <input type="number" id="amount" placeholder="Amount" />
+        <!-- Dropdown to select income or expense -->
+        <select id="type">
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+        <!-- Submit button to add the entry -->
+        <button type="submit">Add</button>
+      </form>
+    </section>
+
+    <!-- Section to display the list of entries -->
+    <section class="entries-section">
+      <h2>Entries</h2>
+      <!-- Unordered list where entries will be dynamically added -->
+      <ul id="entry-list"></ul>
+      <!-- Button to clear all entries (now below the list) -->
+      <button class="clear-all">Clear All</button>
+    </section>
+
+    <!-- Section for summary and chart -->
+    <section class="summary-section">
+      <h2>Summary</h2>
+      <!-- Paragraphs to display totals, updated by JS -->
+      <p id="total-income">Total Income: $0</p>
+      <p id="total-expenses">Total Expenses: $0</p>
+      <p id="balance">Balance: $0</p>
+      <!-- Container for the bar chart -->
+      <div class="chart">
+        <!-- Income bar with label -->
+        <div class="bar-container">
+          <span class="chart-label income-label">$0</span>
+          <div class="bar income-bar"></div>
+        </div>
+        <!-- Expense bar with label -->
+        <div class="bar-container">
+          <span class="chart-label expense-label">$0</span>
+          <div class="bar expense-bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Link to external JS file for functionality -->
+    <script src="script.js"></script>
+  </body>
+</html>
