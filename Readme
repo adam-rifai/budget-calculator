@@ -1,0 +1,92 @@
+### `README.md`
+
+````markdown
+# Personal Budget Calculator (Vanilla JavaScript)
+
+A simple web-based budgeting tool to track income and expenses, built with vanilla JavaScript, HTML, and CSS.
+
+## Features
+
+- **Add Entries:** Input description, amount, date, and type (Income/Expense) to track your budget.
+- **Entry List:** Displays up to 10 entries at a time with a "Show More" button to view additional entries.
+- **Month Filtering:** Filter entries by "All Months," "Current Month," or specific months from your data.
+- **Summary:** View totals for the selected month and all months, with a bar chart for income and expenses.
+  - Total Income: Green (#28a745)
+  - Total Expenses: Orange (#ff9800)
+  - Balance: Blue (#007bff)
+- **Export:** Save your filtered entries as a CSV file.
+- **Clear All:** Remove all entries with a confirmation prompt (appears after 2+ entries).
+- **Local Storage:** Entries are automatically saved in your browser.
+- **FAQ:** Collapsible help section with common questions and answers.
+
+## Setup
+
+1. **Clone or Download:**
+
+   - Clone this repository or download the files: `index.html`, `styles.css`, `script.js`, and this `README.md`.
+   - Organize them in a folder structure like this:
+     ```
+     budget-calculator-js/
+     ├── css/
+     │   └── styles.css
+     ├── js/
+     │   └── script.js
+     ├── index.html
+     └── README.md
+     ```
+
+2. **Run Locally:**
+   - Open `index.html` in a web browser directly (e.g., drag into Chrome), or:
+   - Use a local server for best results (recommended due to browser security restrictions with Local Storage):
+     - Install Node.js if not already installed.
+     - In the terminal, navigate to the project folder and run:
+       ```bash
+       npx live-server
+       ```
+     - This will open the app in your default browser (e.g., `http://127.0.0.1:8080`).
+
+## Usage
+
+- **Adding an Entry:**
+  - Fill in the description, amount (non-negative), date, and select Income or Expense.
+  - Click "Add" to save it.
+- **Viewing Entries:**
+  - Entries appear in the list, limited to 10—click "Show More" to see more.
+  - Use the month filter dropdown to view specific months.
+- **Exporting Data:**
+  - Click "Export" to download a CSV of the filtered entries.
+- **Summary:**
+  - Top section shows the selected month’s totals and chart.
+  - "All Months" shows cumulative totals.
+- **Clearing Data:**
+  - After adding 2+ entries, "Clear All" appears—click and confirm to reset everything.
+- **FAQ:**
+  - Expand the "FAQ / Help" section for quick tips.
+
+## Files
+
+- **`index.html`:** Main structure of the app.
+- **`css/styles.css`:** Styles for layout, colors, and animations.
+- **`js/script.js`:** Logic for adding entries, filtering, exporting, and updating the UI.
+
+## Technologies
+
+- **HTML5:** Structure and markup.
+- **CSS3:** Styling with flexbox, animations, and custom colors.
+- **JavaScript (Vanilla):** Core functionality, Local Storage for persistence.
+
+## Notes
+
+- Data is stored in your browser’s Local Storage—clearing browser data will erase entries unless exported first.
+- Export your data as a CSV regularly for backups, as there’s no import feature yet.
+
+## Future Enhancements (Ideas)
+
+- Add an import feature for CSV files.
+- Implement category suggestions for descriptions.
+- Add automatic backups or cloud sync.
+
+## License
+
+This project is open-source—feel free to use, modify, or share it as you like!
+````
