@@ -4,9 +4,12 @@ let entries = JSON.parse(localStorage.getItem("budgetEntries")) || [];
 // DOM elements for interaction
 const form = document.getElementById("budget-form"); // Form for adding entries
 const entryList = document.getElementById("entry-list"); // List to display entries
-const totalIncomeDisplay = document.getElementById("total-income"); // Income total display
-const totalExpensesDisplay = document.getElementById("total-expenses"); // Expenses total display
-const balanceDisplay = document.getElementById("balance"); // Balance display
+const totalIncomeDisplay = document.getElementById("total-income"); // Income total display (selected month)
+const totalExpensesDisplay = document.getElementById("total-expenses"); // Expenses total display (selected month)
+const balanceDisplay = document.getElementById("balance"); // Balance display (selected month)
+const allTotalIncomeDisplay = document.getElementById("all-total-income"); // All months income display
+const allTotalExpensesDisplay = document.getElementById("all-total-expenses"); // All months expenses display
+const allBalanceDisplay = document.getElementById("all-balance"); // All months balance display
 const incomeBar = document.querySelector(".income-bar"); // Income bar in chart
 const expenseBar = document.querySelector(".expense-bar"); // Expense bar in chart
 const incomeLabel = document.querySelector(".income-label"); // Income chart label
@@ -15,11 +18,15 @@ const clearButton = document.querySelector(".clear-all"); // Clear All button
 const monthFilter = document.getElementById("month-filter"); // Month filter dropdown (for export and list)
 const summaryMonthFilter = document.getElementById("summary-month-filter"); // Month filter for summary
 const exportBtn = document.getElementById("export-btn"); // Export button
+const showMoreBtn = document.getElementById("show-more-btn"); // Show More button
 
 // Set default date to today on page load
 const dateInput = document.getElementById("date");
 const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
 dateInput.value = today; // Set default value
+
+// Track how many entries are displayed
+let displayedCount = 10; // Initial limit
 
 // Function to populate month filters
 function populateMonthFilters() {
@@ -69,7 +76,9 @@ function renderEntries() {
     });
   }
 
-  filteredEntries.forEach((entry) => {
+  // Limit to displayedCount or fewer
+  const visibleEntries = filteredEntries.slice(0, displayedCount);
+  visibleEntries.forEach((entry) => {
     const listItem = document.createElement("li");
     listItem.classList.add(entry.type); // Add income/expense class for styling
     const textSpan = document.createElement("span");
@@ -94,6 +103,10 @@ function renderEntries() {
       renderEntries(); // Re-render filtered list
     });
   });
+
+  // Show "Show More" button if there are more entries to display
+  showMoreBtn.style.display =
+    filteredEntries.length > displayedCount ? "block" : "none";
 }
 
 // Load saved entries into the UI on page load
@@ -136,23 +149,34 @@ form.addEventListener("submit", function (event) {
   // Date input stays as today, no clearing
 });
 
-// Handle Clear All button click
+// Handle Clear All button click with confirmation
 clearButton.addEventListener("click", function () {
-  entries = []; // Reset entries array
-  localStorage.removeItem("budgetEntries"); // Clear saved entries from Local Storage
-  entryList.innerHTML = ""; // Clear the list
-  totalIncomeDisplay.textContent = "Total Income: $0"; // Reset income display
-  totalExpensesDisplay.textContent = "Total Expenses: $0"; // Reset expenses display
-  balanceDisplay.textContent = "Balance: $0"; // Reset balance display
-  balanceDisplay.classList.remove("positive", "negative"); // Remove balance styling
-  incomeBar.style.height = "0px"; // Reset income bar
-  expenseBar.style.height = "0px"; // Reset expense bar
-  incomeLabel.textContent = "$0.00"; // Reset income label
-  expenseLabel.textContent = "$0.00"; // Reset expense label
-  toggleClearButton(); // Update button visibility after clearing
-  populateMonthFilters(); // Reset month filters
-  renderEntries(); // Re-render empty list
-  updateSummary(); // Update summary and chart to reflect cleared state
+  if (
+    confirm(
+      "Are you sure you want to clear all entries? This action cannot be undone."
+    )
+  ) {
+    entries = []; // Reset entries array
+    localStorage.removeItem("budgetEntries"); // Clear saved entries from Local Storage
+    entryList.innerHTML = ""; // Clear the list
+    totalIncomeDisplay.textContent = "Total Income: $0"; // Reset income display
+    totalExpensesDisplay.textContent = "Total Expenses: $0"; // Reset expenses display
+    balanceDisplay.textContent = "Balance: $0"; // Reset balance display
+    balanceDisplay.classList.remove("positive", "negative"); // Remove balance styling
+    incomeBar.style.height = "0px"; // Reset income bar
+    expenseBar.style.height = "0px"; // Reset expense bar
+    incomeLabel.textContent = "$0.00"; // Reset income label
+    expenseLabel.textContent = "$0.00"; // Reset expense label
+    allTotalIncomeDisplay.textContent = "Total Income: $0"; // Reset all months income
+    allTotalExpensesDisplay.textContent = "Total Expenses: $0"; // Reset all months expenses
+    allBalanceDisplay.textContent = "Balance: $0"; // Reset all months balance
+    allBalanceDisplay.classList.remove("positive", "negative"); // Remove all months balance styling
+    toggleClearButton(); // Update button visibility after clearing
+    populateMonthFilters(); // Reset month filters
+    displayedCount = 10; // Reset displayed count
+    renderEntries(); // Re-render empty list
+    updateSummary(); // Update summary and chart to reflect cleared state
+  }
 });
 
 // Handle Export button click
@@ -202,7 +226,14 @@ exportBtn.addEventListener("click", function () {
 
 // Handle month filter change for list and export
 monthFilter.addEventListener("change", function () {
+  displayedCount = 10; // Reset displayed count on filter change
   renderEntries(); // Re-render list based on selected month
+});
+
+// Handle Show More button click
+showMoreBtn.addEventListener("click", function () {
+  displayedCount += 10; // Show 10 more entries
+  renderEntries(); // Re-render with updated count
 });
 
 // Handle summary month filter change
@@ -212,6 +243,7 @@ summaryMonthFilter.addEventListener("change", function () {
 
 // Function to update summary and chart based on selected month
 function updateSummary() {
+  // Selected month totals
   const selectedMonth = summaryMonthFilter.value;
   let filteredEntries = entries;
 
@@ -240,7 +272,7 @@ function updateSummary() {
     });
   }
 
-  // Calculate totals for the filtered entries
+  // Calculate totals for the filtered entries (selected month)
   const totalIncome = filteredEntries
     .filter((entry) => entry.type === "income") // Filter income entries
     .reduce((sum, entry) => sum + entry.amount, 0); // Sum amounts
@@ -249,7 +281,7 @@ function updateSummary() {
     .reduce((sum, entry) => sum + entry.amount, 0); // Sum amounts
   const balance = totalIncome - totalExpenses; // Calculate balance
 
-  // Update summary text
+  // Update selected month summary text
   totalIncomeDisplay.textContent = `Total Income: $${totalIncome.toFixed(2)}`;
   totalExpensesDisplay.textContent = `Total Expenses: $${totalExpenses.toFixed(
     2
@@ -264,7 +296,7 @@ function updateSummary() {
     balanceDisplay.classList.add("negative");
   }
 
-  // Update chart bars and labels
+  // Update chart bars and labels (selected month)
   const maxHeight = 100; // Matches .chart height in CSS
   const maxValue = Math.max(totalIncome, totalExpenses, 1000); // Scale bars, min 1000
   const incomeHeight = (totalIncome / maxValue) * maxHeight; // Calculate income bar height
@@ -273,13 +305,40 @@ function updateSummary() {
   expenseBar.style.height = `${expenseHeight}px`; // Set expense bar height
   incomeLabel.textContent = `$${totalIncome.toFixed(2)}`; // Update income label
   expenseLabel.textContent = `$${totalExpenses.toFixed(2)}`; // Update expense label
+
+  // Calculate totals for all months
+  const allTotalIncome = entries
+    .filter((entry) => entry.type === "income")
+    .reduce((sum, entry) => sum + entry.amount, 0);
+  const allTotalExpenses = entries
+    .filter((entry) => entry.type === "expense")
+    .reduce((sum, entry) => sum + entry.amount, 0);
+  const allBalance = allTotalIncome - allTotalExpenses;
+
+  // Update all-months summary text
+  allTotalIncomeDisplay.textContent = `Total Income: $${allTotalIncome.toFixed(
+    2
+  )}`;
+  allTotalExpensesDisplay.textContent = `Total Expenses: $${allTotalExpenses.toFixed(
+    2
+  )}`;
+  allBalanceDisplay.textContent = `Balance: $${allBalance.toFixed(2)}`;
+
+  // Style all-months balance
+  allBalanceDisplay.classList.remove("positive", "negative");
+  if (allBalance >= 0) {
+    allBalanceDisplay.classList.add("positive");
+  } else {
+    allBalanceDisplay.classList.add("negative");
+  }
 }
 
 // Function to toggle Clear All button visibility
 function toggleClearButton() {
   if (entries.length > 2) {
-    clearButton.style.display = "block"; // Show when more than 2 entries
+    // Show button when more than 2 entries (original logic)
+    clearButton.style.display = "block";
   } else {
-    clearButton.style.display = "none"; // Hide when 2 or fewer entries
+    clearButton.style.display = "none";
   }
 }

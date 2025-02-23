@@ -21,7 +21,7 @@
           id="description"
           placeholder="Description (e.g., Salary)"
         />
-        <!-- Number input for entry amount -->
+        <!-- Number input for entry amount, no negatives -->
         <input type="number" id="amount" placeholder="Amount" min="0" />
         <!-- Date input for entry date -->
         <input type="date" id="date" />
@@ -48,8 +48,9 @@
       </div>
       <!-- Unordered list where entries will be dynamically added -->
       <ul id="entry-list"></ul>
+      <!-- Button to show more entries -->
+      <button id="show-more-btn" style="display: none">Show More</button>
       <!-- Button to clear all entries -->
-
       <button class="clear-all">Clear All</button>
     </section>
 
@@ -62,7 +63,7 @@
           <!-- Options will be populated dynamically by JS -->
         </select>
       </div>
-      <!-- Paragraphs to display totals, updated by JS -->
+      <!-- Paragraphs to display totals for selected month -->
       <p id="total-income">Total Income: $0</p>
       <p id="total-expenses">Total Expenses: $0</p>
       <p id="balance">Balance: $0</p>
@@ -78,6 +79,13 @@
           <span class="chart-label expense-label">$0</span>
           <div class="bar expense-bar"></div>
         </div>
+      </div>
+      <!-- All-months summary -->
+      <div class="all-months-summary">
+        <h3>All Months</h3>
+        <p id="all-total-income">Total Income: $0</p>
+        <p id="all-total-expenses">Total Expenses: $0</p>
+        <p id="all-balance">Balance: $0</p>
       </div>
     </section>
 

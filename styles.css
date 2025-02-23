@@ -206,3 +206,8 @@ p.negative {
   font-size: 0.9em; /* Smaller text */
   color: #333; /* Dark gray text */
 }
+h1,
+h2,
+h3 {
+  color: teal;
+}
