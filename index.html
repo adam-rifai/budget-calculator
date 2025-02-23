@@ -23,6 +23,8 @@
         />
         <!-- Number input for entry amount -->
         <input type="number" id="amount" placeholder="Amount" />
+        <!-- Date input for entry date -->
+        <input type="date" id="date" />
         <!-- Dropdown to select income or expense -->
         <select id="type">
           <option value="income">Income</option>
@@ -36,15 +38,23 @@
     <!-- Section to display the list of entries -->
     <section class="entries-section">
       <h2>Entries</h2>
+      <!-- Month selector and export button -->
+      <div class="controls">
+        <select id="month-filter">
+          <option value="all">All Months</option>
+          <!-- Options will be populated dynamically by JS -->
+        </select>
+        <button id="export-btn">Export</button>
+      </div>
       <!-- Unordered list where entries will be dynamically added -->
       <ul id="entry-list"></ul>
-      <!-- Button to clear all entries (now below the list) -->
+      <!-- Button to clear all entries -->
       <button class="clear-all">Clear All</button>
     </section>
 
     <!-- Section for summary and chart -->
     <section class="summary-section">
-      <h2>Summary</h2>
+      <h2>Summary (Current Month)</h2>
       <!-- Paragraphs to display totals, updated by JS -->
       <p id="total-income">Total Income: $0</p>
       <p id="total-expenses">Total Expenses: $0</p>

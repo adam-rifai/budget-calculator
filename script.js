@@ -12,13 +12,42 @@ const expenseBar = document.querySelector(".expense-bar"); // Expense bar in cha
 const incomeLabel = document.querySelector(".income-label"); // Income chart label
 const expenseLabel = document.querySelector(".expense-label"); // Expense chart label
 const clearButton = document.querySelector(".clear-all"); // Clear All button
+const monthFilter = document.getElementById("month-filter"); // Month filter dropdown
+const exportBtn = document.getElementById("export-btn"); // Export button
+
+// Set default date to today on page load
+const dateInput = document.getElementById("date");
+const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+dateInput.value = today; // Set default value
+
+// Function to populate month filter
+function populateMonthFilter() {
+  const months = new Set(
+    entries.map((entry) => {
+      const date = new Date(entry.date);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`; // YYYY-MM format
+    })
+  );
+  monthFilter.innerHTML = '<option value="all">All Months</option>'; // Reset options
+  months.forEach((month) => {
+    const option = document.createElement("option");
+    option.value = month;
+    option.textContent = month;
+    monthFilter.appendChild(option);
+  });
+}
 
 // Load saved entries into the UI on page load
 entries.forEach((entry) => {
   const listItem = document.createElement("li");
   listItem.classList.add(entry.type); // Add income/expense class for styling
   const textSpan = document.createElement("span");
-  textSpan.textContent = `${entry.description}: $${entry.amount.toFixed(2)}`; // Display text
+  textSpan.textContent = `${entry.date} - ${
+    entry.description
+  }: $${entry.amount.toFixed(2)}`; // Include date in display
   const deleteButton = document.createElement("button");
   deleteButton.textContent = "Delete"; // Delete button text
   listItem.appendChild(textSpan); // Add text to list item
@@ -33,10 +62,12 @@ entries.forEach((entry) => {
     localStorage.setItem("budgetEntries", JSON.stringify(entries)); // Save updated entries
     updateSummary(); // Update totals and chart
     toggleClearButton(); // Check if button should hide
+    populateMonthFilter(); // Update month filter
   });
 });
 updateSummary(); // Update totals and chart with loaded entries
 toggleClearButton(); // Ensure button visibility matches loaded entries
+populateMonthFilter(); // Populate month filter on load
 
 // Handle form submission to add new entries
 form.addEventListener("submit", function (event) {
@@ -45,23 +76,24 @@ form.addEventListener("submit", function (event) {
   // Get input values
   const description = document.getElementById("description").value;
   const amount = parseFloat(document.getElementById("amount").value);
+  const date = document.getElementById("date").value; // Get date value
   const type = document.getElementById("type").value;
 
   // Validate inputs
-  if (description === "" || isNaN(amount) || amount <= 0) {
-    alert("Please enter a valid description and amount!");
+  if (description === "" || isNaN(amount) || amount <= 0 || date === "") {
+    alert("Please enter a valid description, amount, and date!");
     return;
   }
 
-  // Create entry object
-  const entry = { description, amount, type };
+  // Create entry object with date
+  const entry = { description, amount, date, type };
   entries.push(entry); // Add to entries array
 
   // Create list item for display
   const listItem = document.createElement("li");
   listItem.classList.add(type); // Add income/expense class for styling
   const textSpan = document.createElement("span");
-  textSpan.textContent = `${description}: $${amount.toFixed(2)}`; // Display text
+  textSpan.textContent = `${date} - ${description}: $${amount.toFixed(2)}`; // Include date in display
   const deleteButton = document.createElement("button");
   deleteButton.textContent = "Delete"; // Delete button text
   listItem.appendChild(textSpan); // Add text to list item
@@ -76,15 +108,18 @@ form.addEventListener("submit", function (event) {
     localStorage.setItem("budgetEntries", JSON.stringify(entries)); // Save updated entries
     updateSummary(); // Update totals and chart
     toggleClearButton(); // Check if button should hide
+    populateMonthFilter(); // Update month filter
   });
 
   localStorage.setItem("budgetEntries", JSON.stringify(entries)); // Save updated entries
   updateSummary(); // Update totals and chart after adding
   toggleClearButton(); // Check if button should appear
+  populateMonthFilter(); // Update month filter after adding
 
-  // Clear form inputs
+  // Clear form inputs (except date)
   document.getElementById("description").value = "";
   document.getElementById("amount").value = "";
+  // Date input stays as today, no clearing
 });
 
 // Handle Clear All button click
@@ -99,15 +134,68 @@ clearButton.addEventListener("click", function () {
   incomeBar.style.height = "0px"; // Reset income bar
   expenseBar.style.height = "0px"; // Reset expense bar
   toggleClearButton(); // Update button visibility after clearing
+  populateMonthFilter(); // Reset month filter
 });
 
-// Function to update summary and chart
+// Handle Export button click
+exportBtn.addEventListener("click", function () {
+  const selectedMonth = monthFilter.value;
+  let filteredEntries = entries;
+
+  if (selectedMonth !== "all") {
+    filteredEntries = entries.filter((entry) => {
+      const entryDate = new Date(entry.date);
+      return (
+        `${entryDate.getFullYear()}-${String(entryDate.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}` === selectedMonth
+      );
+    });
+  }
+
+  // Create CSV content
+  const csvContent = [
+    "Date,Description,Amount,Type", // Header row
+    ...filteredEntries.map(
+      (entry) =>
+        `${entry.date},${entry.description},${entry.amount},${entry.type}`
+    ),
+  ].join("\n");
+
+  // Create and trigger download
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `budget_${
+    selectedMonth === "all" ? "all" : selectedMonth
+  }.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
+// Function to update summary and chart (current month only)
 function updateSummary() {
-  // Calculate totals
-  const totalIncome = entries
+  // Get current month and year for filtering
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentYear = now.getFullYear();
+
+  // Filter entries for the current month
+  const currentMonthEntries = entries.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    return (
+      entryDate.getMonth() === currentMonth &&
+      entryDate.getFullYear() === currentYear
+    );
+  });
+
+  // Calculate totals for the current month
+  const totalIncome = currentMonthEntries
     .filter((entry) => entry.type === "income") // Filter income entries
     .reduce((sum, entry) => sum + entry.amount, 0); // Sum amounts
-  const totalExpenses = entries
+  const totalExpenses = currentMonthEntries
     .filter((entry) => entry.type === "expense") // Filter expense entries
     .reduce((sum, entry) => sum + entry.amount, 0); // Sum amounts
   const balance = totalIncome - totalExpenses; // Calculate balance
@@ -128,7 +216,7 @@ function updateSummary() {
   }
 
   // Update chart bars and labels
-  const maxHeight = 100; // Matches .chart height in CSS (reduced from 200)
+  const maxHeight = 100; // Matches .chart height in CSS
   const maxValue = Math.max(totalIncome, totalExpenses, 1000); // Scale bars, min 1000
   const incomeHeight = (totalIncome / maxValue) * maxHeight; // Calculate income bar height
   const expenseHeight = (totalExpenses / maxValue) * maxHeight; // Calculate expense bar height

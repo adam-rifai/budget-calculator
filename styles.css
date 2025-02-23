@@ -40,6 +40,11 @@ input[type="number"] {
   flex: 1; /* Amount field takes less space */
 }
 
+input[type="date"] {
+  flex: 1.5; /* Date field takes moderate space */
+}
+
+/* Styling for the Add button */
 #budget-form button {
   background-color: #007bff; /* Blue "Add" button */
   color: white; /* White text */
@@ -54,8 +59,7 @@ input[type="number"] {
 /* Styling for the Clear All button */
 .clear-all {
   display: none; /* Hidden by default until > 2 entries */
-  /* margin: 20px 0 0 0; Space above, no centering */
-  margin: 0 auto;
+  margin: 20px 0 0 0; /* Space above, no centering */
   padding: 10px 20px; /* Inner spacing */
   font-size: 1em; /* Same size as other buttons */
   background-color: #dc3545; /* Red to indicate reset */
@@ -82,6 +86,27 @@ h2 {
   font-size: 1.5em; /* Slightly larger headings */
   color: #333; /* Dark gray */
   margin-bottom: 15px; /* Space below headings */
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px; /* Space below controls */
+}
+
+#month-filter {
+  flex: 1; /* Takes available space */
+}
+
+#export-btn {
+  background-color: #28a745; /* Green export button */
+  color: white; /* White text */
+  border: none; /* No border */
+  cursor: pointer; /* Hand cursor */
+}
+
+#export-btn:hover {
+  background-color: #218838; /* Darker green on hover */
 }
 
 ul {
